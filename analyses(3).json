@@ -1,0 +1,107 @@
+[
+  {
+    "company_id": "snipes_spain_sl",
+    "company_name": "SNIPES SPAIN SL",
+    "year": 2024,
+    "risk_level": "bajo",
+    "metrics": {
+      "ventas": 73442708.94,
+      "margen_bruto_pct": 45.87,
+      "ebitda_pct": 4.73,
+      "ebit_pct": 2.57,
+      "resultado_neto_pct": 2.2,
+      "roa": 6.28,
+      "roe": 9.12,
+      "ratio_liquidez": 232.63,
+      "ratio_liquidez_inmediata": 111.94,
+      "porcentaje_endeudamiento": 0.64,
+      "coste_deuda": 0.03,
+      "cobertura_intereses": 365.64,
+      "rotacion_activos": 2.44
+    }
+  },
+  {
+    "company_id": "foot_district_sl",
+    "company_name": "FOOT DISTRICT SL",
+    "year": 2024,
+    "risk_level": "medio",
+    "metrics": {
+      "ventas": 26653480.88,
+      "margen_bruto_pct": 39.58,
+      "ebitda_pct": 8.26,
+      "ebit_pct": 6.31,
+      "resultado_neto_pct": 4.15,
+      "roa": 16.69,
+      "roe": 44.19,
+      "ratio_liquidez": 136.48,
+      "ratio_liquidez_inmediata": 8.85,
+      "porcentaje_endeudamiento": 21.33,
+      "coste_deuda": 0.09,
+      "cobertura_intereses": 8.51,
+      "rotacion_activos": 2.64
+    }
+  },
+  {
+    "company_id": "proudlaces_sl",
+    "company_name": "PROUDLACES SL",
+    "year": 2024,
+    "risk_level": "medio-alto",
+    "metrics": {
+      "ventas": 20963340.54,
+      "margen_bruto_pct": 38.51,
+      "ebitda_pct": 2.95,
+      "ebit_pct": 1.3,
+      "resultado_neto_pct": 0.51,
+      "roa": 2.49,
+      "roe": 5.88,
+      "ratio_liquidez": 107.95,
+      "ratio_liquidez_inmediata": 7.49,
+      "porcentaje_endeudamiento": 35.28,
+      "coste_deuda": 0.06,
+      "cobertura_intereses": 1.26,
+      "rotacion_activos": 1.92
+    }
+  },
+  {
+    "company_id": "diagonal_eyewear_sl",
+    "company_name": "DIAGONAL EYEWEAR SL",
+    "year": 2024,
+    "risk_level": "alto",
+    "metrics": {
+      "ventas": 14529554.06,
+      "margen_bruto_pct": 14.36,
+      "ebitda_pct": 2.99,
+      "ebit_pct": 2.54,
+      "resultado_neto_pct": 1.15,
+      "roa": 3.48,
+      "roe": 45.52,
+      "ratio_liquidez": 108.3,
+      "ratio_liquidez_inmediata": 37.91,
+      "porcentaje_endeudamiento": 88.65,
+      "coste_deuda": 0.08,
+      "cobertura_intereses": 1.09,
+      "rotacion_activos": 3.03
+    }
+  },
+  {
+    "company_id": "sa2l_pharmacie_sl",
+    "company_name": "SA2L PHARMACIE SL",
+    "year": 2024,
+    "risk_level": "bajo",
+    "metrics": {
+      "ventas": 11361149.81,
+      "margen_bruto_pct": 38.45,
+      "ebitda_pct": 0.82,
+      "ebit_pct": 0.78,
+      "resultado_neto_pct": 0.5,
+      "roa": 2.86,
+      "roe": 10.21,
+      "ratio_liquidez": 127.08,
+      "ratio_liquidez_inmediata": 37.99,
+      "porcentaje_endeudamiento": 11.13,
+      "coste_deuda": 0.04,
+      "cobertura_intereses": 7.36,
+      "rotacion_activos": 3.68
+    }
+  }
+]
