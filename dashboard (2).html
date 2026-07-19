@@ -1,0 +1,2195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <!-- FinSight Dashboard v2.1 - Cache Bust: 20250719 -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinSight — Dashboard de Auditoría Financiera</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: #334155;
+            --bg-card-hover: #475569;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-blue: #3b82f6;
+            --accent-cyan: #06b6d4;
+            --accent-green: #22c55e;
+            --accent-yellow: #eab308;
+            --accent-orange: #f97316;
+            --accent-red: #ef4444;
+            --accent-purple: #a855f7;
+            --border: #475569;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+            --radius: 12px;
+            --radius-sm: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 1.5rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: -4px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .year-selector {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .year-selector:focus {
+            border-color: var(--accent-blue);
+        }
+
+        .btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--accent-blue);
+        }
+
+        .btn.active {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: white;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            gap: 0.5rem;
+            padding: 1rem 2rem 0;
+            border-bottom: 1px solid var(--border);
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            padding: 0.75rem 1.25rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            white-space: nowrap;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .nav-tab:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-tab.active {
+            color: var(--accent-blue);
+            border-bottom-color: var(--accent-blue);
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cards */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            transition: all 0.3s;
+            box-shadow: var(--shadow);
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--accent-blue);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-top: 0.5rem;
+        }
+
+        .card-change {
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .positive { color: var(--accent-green); }
+        .negative { color: var(--accent-red); }
+        .neutral { color: var(--text-muted); }
+
+        /* Risk Badge */
+        .risk-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .risk-bajo {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--accent-green);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .risk-medio {
+            background: rgba(234, 179, 8, 0.15);
+            color: var(--accent-yellow);
+            border: 1px solid rgba(234, 179, 8, 0.3);
+        }
+
+        .risk-medio-alto {
+            background: rgba(249, 115, 22, 0.15);
+            color: var(--accent-orange);
+            border: 1px solid rgba(249, 115, 22, 0.3);
+        }
+
+        .risk-alto {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--accent-red);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        /* Company Cards (Overview) */
+        .company-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .company-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .company-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .company-card:hover::before {
+            opacity: 1;
+        }
+
+        .company-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--accent-blue);
+        }
+
+        .company-card.selected {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px var(--accent-blue), var(--shadow-lg);
+        }
+
+        .company-card.selected::before {
+            opacity: 1;
+        }
+
+        .company-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .company-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .company-description {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .company-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .company-metric {
+            background: var(--bg-primary);
+            padding: 0.75rem;
+            border-radius: var(--radius-sm);
+        }
+
+        .company-metric-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .company-metric-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 0.25rem;
+        }
+
+        /* Tables */
+        .table-container {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .table-header {
+            padding: 1rem 1.5rem;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 0.875rem 1.25rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: var(--bg-card);
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            position: sticky;
+            top: 0;
+        }
+
+        td {
+            font-size: 0.9rem;
+            color: var(--text-primary);
+        }
+
+        tr:hover td {
+            background: var(--bg-card);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .cell-value {
+            font-family: 'SF Mono', monospace;
+            font-weight: 500;
+        }
+
+        .cell-trend {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.8rem;
+        }
+
+        /* Charts */
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .chart-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        .chart-container.large {
+            height: 400px;
+        }
+
+        /* Comparison */
+        .comparison-bar {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .comparison-label {
+            min-width: 120px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-align: right;
+        }
+
+        .comparison-track {
+            flex: 1;
+            height: 28px;
+            background: var(--bg-primary);
+            border-radius: var(--radius-sm);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .comparison-fill {
+            height: 100%;
+            border-radius: var(--radius-sm);
+            transition: width 0.6s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .comparison-value {
+            min-width: 80px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            font-family: 'SF Mono', monospace;
+        }
+
+        /* Detail View */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+        }
+
+        .detail-sidebar {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .detail-company-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .detail-section {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .detail-section-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .detail-metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        .detail-metric-label {
+            color: var(--text-secondary);
+        }
+
+        .detail-metric-value {
+            font-weight: 600;
+            font-family: 'SF Mono', monospace;
+        }
+
+        /* Audit Alerts */
+        .audit-alerts {
+            margin-top: 1rem;
+        }
+
+        .audit-alert {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border-radius: var(--radius-sm);
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .audit-alert-icon {
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .audit-alert-info {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .audit-alert-warning {
+            background: rgba(234, 179, 8, 0.1);
+            border: 1px solid rgba(234, 179, 8, 0.2);
+        }
+
+        .audit-alert-danger {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .detail-sidebar {
+                position: static;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            th, td {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-card);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--bg-card-hover);
+        }
+
+        /* Loading */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            color: var(--text-secondary);
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--bg-card);
+            border-top-color: var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+        }
+
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0.5rem 0.75rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            z-index: 1000;
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
+        }
+
+        /* Heatmap cells */
+        .heatmap-cell {
+            padding: 0.5rem 0.75rem;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border-radius: var(--radius-sm);
+        }
+
+        .heatmap-good { background: rgba(34, 197, 94, 0.2); color: var(--accent-green); }
+        .heatmap-medium { background: rgba(234, 179, 8, 0.2); color: var(--accent-yellow); }
+        .heatmap-bad { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); }
+        .heatmap-neutral { background: var(--bg-primary); color: var(--text-muted); }
+
+        /* Section title */
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .section-subtitle {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Mini chart in cards */
+        .mini-chart {
+            height: 40px;
+            margin-top: 0.5rem;
+        }
+
+        /* Toggle switches */
+        .toggle-group {
+            display: flex;
+            gap: 0.5rem;
+            background: var(--bg-primary);
+            padding: 0.25rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+        }
+
+        .toggle-btn {
+            padding: 0.4rem 0.8rem;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .toggle-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .toggle-btn.active {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        /* Color scale for heatmap */
+        .color-scale {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        .color-scale-bar {
+            display: flex;
+            height: 12px;
+            width: 100px;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .color-scale-segment {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">FS</div>
+                <div>
+                    <div class="logo-text">FinSight</div>
+                    <div class="logo-subtitle">Dashboard de Auditoría Financiera</div>
+                </div>
+            </div>
+            <div class="header-actions">
+                <select class="year-selector" id="yearSelector">
+                    <option value="2024">2024</option>
+                    <option value="2023">2023</option>
+                    <option value="2022">2022</option>
+                </select>
+                <select class="year-selector" id="companySelector" style="min-width: 180px;">
+                    <option value="all">Todas las empresas</option>
+                    <option value="snipes_spain_sl">SNIPES SPAIN SL</option>
+                    <option value="foot_district_sl">FOOT DISTRICT SL</option>
+                    <option value="proudlaces_sl">PROUDLACES SL</option>
+                    <option value="diagonal_eyewear_sl">DIAGONAL EYEWEAR SL</option>
+                    <option value="sa2l_pharmacie_sl">SA2L PHARMACIE SL</option>
+                </select>
+                <button class="btn" id="selectAllBtn">Seleccionar Todas</button>
+                <button class="btn" id="clearSelectionBtn">Limpiar</button>
+            </div>
+        </div>
+        <div class="nav-tabs" id="navTabs">
+            <div class="nav-tab active" data-section="overview">Resumen</div>
+            <div class="nav-tab" data-section="comparison">Comparativa</div>
+            <div class="nav-tab" data-section="ratios">Ratios</div>
+            <div class="nav-tab" data-section="trends">Tendencias</div>
+            <div class="nav-tab" data-section="rotacion">Rotación</div>
+            <div class="nav-tab" data-section="audit">Auditoría</div>
+            <div class="nav-tab" data-section="detail">Detalle</div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <!-- OVERVIEW SECTION -->
+        <section class="section active" id="overview">
+            <h2 class="section-title">Panel de Control</h2>
+            <p class="section-subtitle">Visión general de todas las empresas — selecciona para comparar</p>
+
+            <div class="cards-grid" id="overviewCards">
+                <!-- KPI Cards will be injected here -->
+            </div>
+
+            <div class="company-grid" id="companyGrid">
+                <!-- Company cards will be injected here -->
+            </div>
+        </section>
+
+        <!-- COMPARISON SECTION -->
+        <section class="section" id="comparison">
+            <h2 class="section-title">Comparativa de Empresas</h2>
+            <p class="section-subtitle">Comparación lado a lado de métricas clave</p>
+
+            <div class="chart-grid">
+                <div class="chart-card">
+                    <div class="chart-title">Rentabilidad (ROE vs ROA)</div>
+                    <div class="chart-container"><canvas id="comparisonChart1"></canvas></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">Estructura de Capital</div>
+                    <div class="chart-container"><canvas id="comparisonChart2"></canvas></div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <div class="table-header">
+                    <span class="table-title">Tabla Comparativa</span>
+                    <div class="toggle-group">
+                        <button class="toggle-btn active" data-metric-group="rentabilidad">Rentabilidad</button>
+                        <button class="toggle-btn" data-metric-group="estructura">Estructura</button>
+                        <button class="toggle-btn" data-metric-group="liquidez">Liquidez</button>
+                        <button class="toggle-btn" data-metric-group="endeudamiento">Endeudamiento</button>
+                    </div>
+                </div>
+                <div id="comparisonTableContainer">
+                    <table id="comparisonTable"></table>
+                </div>
+            </div>
+        </section>
+
+        <!-- RATIOS SECTION -->
+        <section class="section" id="ratios">
+            <h2 class="section-title">Análisis de Ratios</h2>
+            <p class="section-subtitle">Métricas financieras detalladas con benchmarks sectoriales</p>
+
+            <div class="chart-grid">
+                <div class="chart-card">
+                    <div class="chart-title">Margen Bruto vs EBITDA</div>
+                    <div class="chart-container"><canvas id="ratiosChart1"></canvas></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">Liquidez y Solvencia</div>
+                    <div class="chart-container"><canvas id="ratiosChart2"></canvas></div>
+                </div>
+            </div>
+
+            <div class="chart-grid">
+                <div class="chart-card">
+                    <div class="chart-title">Endeudamiento y Coste</div>
+                    <div class="chart-container"><canvas id="ratiosChart3"></canvas></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">Cobertura de Intereses</div>
+                    <div class="chart-container"><canvas id="ratiosChart4"></canvas></div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <div class="table-header">
+                    <span class="table-title">Matriz de Ratios</span>
+                </div>
+                <table id="ratiosMatrix"></table>
+            </div>
+        </section>
+
+        <!-- TRENDS SECTION -->
+        <section class="section" id="trends">
+            <h2 class="section-title">Evolución Temporal</h2>
+            <p class="section-subtitle">Tendencias 2022-2024 de las empresas seleccionadas</p>
+
+            <div class="chart-grid">
+                <div class="chart-card">
+                    <div class="chart-title">Ventas (M€)</div>
+                    <div class="chart-container large"><canvas id="trendsChart1"></canvas></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">Rentabilidad (%)</div>
+                    <div class="chart-container large"><canvas id="trendsChart2"></canvas></div>
+                </div>
+            </div>
+
+            <div class="chart-grid">
+                <div class="chart-card">
+                    <div class="chart-title">EBITDA (%)</div>
+                    <div class="chart-container large"><canvas id="trendsChart3"></canvas></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">Endeudamiento (%)</div>
+                    <div class="chart-container large"><canvas id="trendsChart4"></canvas></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ROTACION SECTION -->
+        <section class="section" id="rotacion">
+            <h2 class="section-title">Rotación y Plazos</h2>
+            <p class="section-subtitle">Periodos medios de cobro, pago y rotación de inventario</p>
+
+            <div class="chart-grid">
+                <div class="chart-card">
+                    <div class="chart-title">Periodo Medio de Cobro (días)</div>
+                    <div class="chart-container"><canvas id="rotacionChart1"></canvas></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">Periodo Medio de Pago (días)</div>
+                    <div class="chart-container"><canvas id="rotacionChart2"></canvas></div>
+                </div>
+            </div>
+
+            <div class="chart-grid">
+                <div class="chart-card">
+                    <div class="chart-title">Rotación de Activos</div>
+                    <div class="chart-container"><canvas id="rotacionChart3"></canvas></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">Rotación de Inventario (días)</div>
+                    <div class="chart-container"><canvas id="rotacionChart4"></canvas></div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <div class="table-header">
+                    <span class="table-title">Tabla de Rotación y Plazos</span>
+                </div>
+                <table id="rotacionTable"></table>
+            </div>
+        </section>
+
+        <!-- AUDIT SECTION -->
+        <section class="section" id="audit">
+            <h2 class="section-title">Visión de Auditoría</h2>
+            <p class="section-subtitle">Riesgos, alertas y recomendaciones por empresa</p>
+
+            <div class="cards-grid" id="auditCards">
+                <!-- Audit cards will be injected here -->
+            </div>
+
+            <div class="table-container">
+                <div class="table-header">
+                    <span class="table-title">Mapa de Calor de Riesgos</span>
+                </div>
+                <table id="riskHeatmap"></table>
+            </div>
+        </section>
+
+        <!-- DETAIL SECTION -->
+        <section class="section" id="detail">
+            <h2 class="section-title">Detalle por Empresa</h2>
+            <p class="section-subtitle">Análisis exhaustivo de la empresa seleccionada</p>
+
+            <div class="detail-grid" id="detailGrid">
+                <div class="detail-sidebar" id="detailSidebar">
+                    <!-- Sidebar content -->
+                </div>
+                <div id="detailContent">
+                    <!-- Detail charts and tables -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+<script>
+
+// ===== DATA =====
+const companiesData = [{"id": "snipes_spain_sl", "name": "SNIPES SPAIN SL", "description": "Retail de moda urbana y sneakers. Estructura de costes operativos pesada pero solidez patrimonial muy alta.", "risk_level": "bajo", "latest_year": 2024, "historical": [{"año": 2022, "ventas": 66946357.13, "margen_bruto": 30021231.42, "margen_bruto_pct": 44.84, "ebitda": 1506971.6, "ebitda_pct": 2.25, "ebit": -401264.53, "ebit_pct": -0.6, "resultado_neto": -401328.0, "resultado_neto_pct": -0.6, "activo_total": 27624454.63, "activo_corriente": 18756312.93, "activo_no_corriente": 8868141.7, "patrimonio_neto": 16738134.81, "pasivo_corriente": 10886319.82, "pasivo_no_corriente": 0.0, "fondo_maniobra": 7869993.11, "ratio_fondo_maniobra": 0.28, "ratio_solidez": 1.89, "ratio_liquidez": 172.29, "ratio_liquidez_inmediata": 79.91, "porcentaje_endeudamiento": 0.42, "rotacion_activos": 2.42, "roa": -1.45, "rentabilidad_explotacion": 5.46, "roe": -2.4, "coste_deuda": 0.0, "cobertura_servicio_deuda": -0.28, "cobertura_intereses": -6322.11, "existencias": 8440340.818500001, "clientes": 2813446.9395, "tesoreria": 5626893.879, "otros_activos_corrientes": 1875631.293, "inmovilizado_material": 6207699.1899999995, "inmovilizado_intangible": 1773628.3399999999, "otros_activos_no_corrientes": 886814.1699999999, "deuda_bancaria_lp": 0.0, "deuda_bancaria_cp": 2177263.964, "proveedores": 5443159.91, "otros_pasivos": 3265895.946, "pmc": 112, "pmp": 262, "rotacion_inventario": 64}, {"año": 2023, "ventas": 73477510.97, "margen_bruto": 33307461.62, "margen_bruto_pct": 45.33, "ebitda": 3079893.9, "ebitda_pct": 4.19, "ebit": 1540485.43, "ebit_pct": 2.1, "resultado_neto": 849839.5, "resultado_neto_pct": 1.16, "activo_total": 31405504.75, "activo_corriente": 22491987.07, "activo_no_corriente": 8913517.68, "patrimonio_neto": 19077796.29, "pasivo_corriente": 12327708.46, "pasivo_no_corriente": 0.0, "fondo_maniobra": 10164278.61, "ratio_fondo_maniobra": 0.32, "ratio_solidez": 2.14, "ratio_liquidez": 182.45, "ratio_liquidez_inmediata": 94.25, "porcentaje_endeudamiento": 0.5, "rotacion_activos": 2.34, "roa": 4.91, "rentabilidad_explotacion": 9.81, "roe": 8.06, "coste_deuda": 0.01, "cobertura_servicio_deuda": 0.05, "cobertura_intereses": 645.91, "existencias": 10121394.1815, "clientes": 3373798.0605, "tesoreria": 6747596.121, "otros_activos_corrientes": 2249198.707, "inmovilizado_material": 6239462.375999999, "inmovilizado_intangible": 1782703.536, "otros_activos_no_corrientes": 891351.768, "deuda_bancaria_lp": 0.0, "deuda_bancaria_cp": 2465541.6920000003, "proveedores": 6163854.23, "otros_pasivos": 3698312.538, "pmc": 112, "pmp": 262, "rotacion_inventario": 64}, {"año": 2024, "ventas": 73442708.94, "margen_bruto": 33686397.67, "margen_bruto_pct": 45.87, "ebitda": 3475146.5, "ebitda_pct": 4.73, "ebit": 1890988.1, "ebit_pct": 2.57, "resultado_neto": 1612556.62, "resultado_neto_pct": 2.2, "activo_total": 30117474.36, "activo_corriente": 21930279.14, "activo_no_corriente": 8187195.22, "patrimonio_neto": 20690352.91, "pasivo_corriente": 9427121.45, "pasivo_no_corriente": 0.0, "fondo_maniobra": 12503157.69, "ratio_fondo_maniobra": 0.41, "ratio_solidez": 2.53, "ratio_liquidez": 232.63, "ratio_liquidez_inmediata": 111.94, "porcentaje_endeudamiento": 0.64, "rotacion_activos": 2.54, "roa": 6.28, "rentabilidad_explotacion": 11.54, "roe": 9.12, "coste_deuda": 0.03, "cobertura_servicio_deuda": -0.17, "cobertura_intereses": 365.64, "existencias": 9868625.613, "clientes": 3289541.871, "tesoreria": 6579083.742, "otros_activos_corrientes": 2193027.9140000003, "inmovilizado_material": 5731036.653999999, "inmovilizado_intangible": 1637439.044, "otros_activos_no_corrientes": 818719.522, "deuda_bancaria_lp": 0.0, "deuda_bancaria_cp": 1885424.29, "proveedores": 4713560.725, "otros_pasivos": 2828136.4349999996, "pmc": 112, "pmp": 262, "rotacion_inventario": 64}]}, {"id": "foot_district_sl", "name": "FOOT DISTRICT SL", "description": "Retail especializado en sneakers. Rentabilidad muy alta con modelo eficiente, pero dependencia de rotación de circulante.", "risk_level": "medio", "latest_year": 2024, "historical": [{"año": 2022, "ventas": 20658319.79, "margen_bruto": 7979664.49, "margen_bruto_pct": 38.63, "ebitda": 1790209.85, "ebitda_pct": 8.67, "ebit": 1437045.38, "ebit_pct": 6.96, "resultado_neto": 942927.12, "resultado_neto_pct": 4.56, "activo_total": 103261764.0, "activo_corriente": 8071776.72, "activo_no_corriente": 2263987.28, "patrimonio_neto": 1524099.0, "pasivo_corriente": 7852526.94, "pasivo_no_corriente": 959138.06, "fondo_maniobra": 219249.78, "ratio_fondo_maniobra": 0.02, "ratio_solidez": 0.67, "ratio_liquidez": 102.79, "ratio_liquidez_inmediata": 3.23, "porcentaje_endeudamiento": 36.22, "rotacion_activos": 2.0, "roa": 13.9, "rentabilidad_explotacion": 17.32, "roe": 2.89, "coste_deuda": 0.05, "cobertura_servicio_deuda": -49.94, "cobertura_intereses": 8.27, "existencias": 4439477.196, "clientes": 1614355.344, "tesoreria": 1210766.508, "otros_activos_corrientes": 807177.672, "inmovilizado_material": 1471591.7319999998, "inmovilizado_intangible": 565996.82, "otros_activos_no_corrientes": 226398.728, "deuda_bancaria_lp": 1057399.8, "deuda_bancaria_cp": 2202916.25, "proveedores": 3524666.0, "otros_pasivos": 2026682.9500000002, "pmc": 107, "pmp": 365, "rotacion_inventario": 144}, {"año": 2023, "ventas": 23015494.65, "margen_bruto": 8471752.82, "margen_bruto_pct": 36.81, "ebitda": 1642202.17, "ebitda_pct": 7.14, "ebit": 1201050.76, "ebit_pct": 5.22, "resultado_neto": 732142.28, "resultado_neto_pct": 3.18, "activo_total": 109340303.43, "activo_corriente": 8767388.88, "activo_no_corriente": 2156914.54, "patrimonio_neto": 2265514.64, "pasivo_corriente": 7397774.99, "pasivo_no_corriente": 1261013.79, "fondo_maniobra": 1369613.89, "ratio_fondo_maniobra": 0.13, "ratio_solidez": 1.04, "ratio_liquidez": 118.51, "ratio_liquidez_inmediata": 3.77, "porcentaje_endeudamiento": 6.05, "rotacion_activos": 2.11, "roa": 10.99, "rentabilidad_explotacion": 15.03, "roe": 43.58, "coste_deuda": 0.06, "cobertura_servicio_deuda": 16.2, "cobertura_intereses": 5.57, "existencias": 4822063.884000001, "clientes": 1753477.7760000003, "tesoreria": 1315108.3320000002, "otros_activos_corrientes": 876738.8880000002, "inmovilizado_material": 1401994.4510000001, "inmovilizado_intangible": 539228.635, "otros_activos_no_corrientes": 215691.45400000003, "deuda_bancaria_lp": 1039054.6536000001, "deuda_bancaria_cp": 2164697.1950000003, "proveedores": 3463515.5120000006, "otros_pasivos": 1991521.4194000002, "pmc": 107, "pmp": 365, "rotacion_inventario": 144}, {"año": 2024, "ventas": 26653480.88, "margen_bruto": 10550149.28, "margen_bruto_pct": 39.58, "ebitda": 2201352.97, "ebitda_pct": 8.26, "ebit": 1683041.99, "ebit_pct": 6.31, "resultado_neto": 1106037.61, "resultado_neto_pct": 4.15, "activo_total": 10081931.06, "activo_corriente": 8082631.83, "activo_no_corriente": 1999299.23, "patrimonio_neto": 3368919.94, "pasivo_corriente": 5922147.6, "pasivo_no_corriente": 790863.52, "fondo_maniobra": 2160484.23, "ratio_fondo_maniobra": 0.21, "ratio_solidez": 1.68, "ratio_liquidez": 136.48, "ratio_liquidez_inmediata": 8.85, "porcentaje_endeudamiento": 21.33, "rotacion_activos": 2.64, "roa": 16.69, "rentabilidad_explotacion": 21.84, "roe": 44.19, "coste_deuda": 0.09, "cobertura_servicio_deuda": 8.72, "cobertura_intereses": 8.51, "existencias": 4445447.5065, "clientes": 1616526.3660000002, "tesoreria": 1212394.7745, "otros_activos_corrientes": 808263.1830000001, "inmovilizado_material": 1299544.4995, "inmovilizado_intangible": 499824.8075, "otros_activos_no_corrientes": 199929.923, "deuda_bancaria_lp": 805561.3343999998, "deuda_bancaria_cp": 1678252.7799999998, "proveedores": 2685204.448, "otros_pasivos": 1543992.5576, "pmc": 107, "pmp": 365, "rotacion_inventario": 144}]}, {"id": "proudlaces_sl", "name": "PROUDLACES SL", "description": "Retail de moda. Rentabilidad volátil, estructura de capital débil y liquidez justa.", "risk_level": "medio-alto", "latest_year": 2024, "historical": [{"año": 2022, "ventas": 22187938.61, "margen_bruto": 9580878.75, "margen_bruto_pct": 43.18, "ebitda": 1043787.22, "ebitda_pct": 4.7, "ebit": 651975.81, "ebit_pct": 2.94, "resultado_neto": 433493.05, "resultado_neto_pct": 1.95, "activo_total": 12073269.16, "activo_corriente": 10459178.6, "activo_no_corriente": 1614190.01, "patrimonio_neto": 2715066.47, "pasivo_corriente": 7559098.15, "pasivo_no_corriente": 1799203.99, "fondo_maniobra": 2900080.45, "ratio_fondo_maniobra": 0.24, "ratio_solidez": 1.68, "ratio_liquidez": 138.37, "ratio_liquidez_inmediata": 8.57, "porcentaje_endeudamiento": 6.75, "rotacion_activos": 1.84, "roa": 5.4, "rentabilidad_explotacion": 8.64, "roe": 21.31, "coste_deuda": 0.01, "cobertura_servicio_deuda": 6.54, "cobertura_intereses": 23.87, "existencias": 5229589.3, "clientes": 2614794.65, "tesoreria": 1568876.7899999998, "otros_activos_corrientes": 1045917.86, "inmovilizado_material": 968514.0059999999, "inmovilizado_intangible": 484257.00299999997, "otros_activos_no_corrientes": 161419.00100000002, "deuda_bancaria_lp": 1497328.3424000002, "deuda_bancaria_cp": 2807490.642, "proveedores": 3275405.749, "otros_pasivos": 1778077.4066, "pmc": 105, "pmp": 597, "rotacion_inventario": 163}, {"año": 2023, "ventas": 24572157.92, "margen_bruto": 8727361.35, "margen_bruto_pct": 35.52, "ebitda": 6114.51, "ebitda_pct": 0.02, "ebit": -367779.35, "ebit_pct": -1.5, "resultado_neto": -355707.08, "resultado_neto_pct": -1.45, "activo_total": 16009663.0, "activo_corriente": 9706163.06, "activo_no_corriente": 4113845.84, "patrimonio_neto": 2336859.4, "pasivo_corriente": 8844667.55, "pasivo_no_corriente": 2638481.95, "fondo_maniobra": 861495.51, "ratio_fondo_maniobra": 0.06, "ratio_solidez": 0.57, "ratio_liquidez": 109.74, "ratio_liquidez_inmediata": 11.89, "porcentaje_endeudamiento": 38.82, "rotacion_activos": 1.78, "roa": -2.66, "rentabilidad_explotacion": 0.04, "roe": -20.33, "coste_deuda": 0.03, "cobertura_servicio_deuda": 73.13, "cobertura_intereses": -2.48, "existencias": 4853081.53, "clientes": 2426540.765, "tesoreria": 1455924.459, "otros_activos_corrientes": 970616.3060000001, "inmovilizado_material": 2468307.5039999997, "inmovilizado_intangible": 1234153.7519999999, "otros_activos_no_corrientes": 411384.58400000003, "deuda_bancaria_lp": 1837303.92, "deuda_bancaria_cp": 3444944.85, "proveedores": 4019102.3249999997, "otros_pasivos": 2181798.405, "pmc": 105, "pmp": 597, "rotacion_inventario": 163}, {"año": 2024, "ventas": 20963340.54, "margen_bruto": 8073171.59, "margen_bruto_pct": 38.51, "ebitda": 619057.86, "ebitda_pct": 2.95, "ebit": 272431.12, "ebit_pct": 1.3, "resultado_neto": 107673.31, "resultado_neto_pct": 0.51, "activo_total": 10935097.97, "activo_corriente": 7254485.57, "activo_no_corriente": 3680612.4, "patrimonio_neto": 2444532.7, "pasivo_corriente": 6719978.1, "pasivo_no_corriente": 1770587.17, "fondo_maniobra": 534507.47, "ratio_fondo_maniobra": 0.05, "ratio_solidez": 0.66, "ratio_liquidez": 107.95, "ratio_liquidez_inmediata": 7.49, "porcentaje_endeudamiento": 35.28, "rotacion_activos": 1.92, "roa": 2.49, "rentabilidad_explotacion": 5.66, "roe": 5.88, "coste_deuda": 0.06, "cobertura_servicio_deuda": -25.06, "cobertura_intereses": 1.26, "existencias": 3627242.785, "clientes": 1813621.3925, "tesoreria": 1088172.8355, "otros_activos_corrientes": 725448.557, "inmovilizado_material": 2208367.44, "inmovilizado_intangible": 1104183.72, "otros_activos_no_corrientes": 368061.24, "deuda_bancaria_lp": 1358490.4431999999, "deuda_bancaria_cp": 2547169.581, "proveedores": 2971697.8444999997, "otros_pasivos": 1613207.4013, "pmc": 105, "pmp": 597, "rotacion_inventario": 163}]}, {"id": "diagonal_eyewear_sl", "name": "DIAGONAL EYEWEAR SL", "description": "Retail de gafas y accesorios. Márgenes bajos, apalancamiento financiero elevado y riesgo de liquidez agudo.", "risk_level": "alto", "latest_year": 2024, "historical": [{"año": 2022, "ventas": 10026640.28, "margen_bruto": 1563483.72, "margen_bruto_pct": 15.59, "ebitda": 765884.43, "ebitda_pct": 7.64, "ebit": 746016.82, "ebit_pct": 7.44, "resultado_neto": 561171.29, "resultado_neto_pct": 5.6, "activo_total": 3795247.42, "activo_corriente": 2804878.78, "activo_no_corriente": 990368.64, "patrimonio_neto": 979822.84, "pasivo_corriente": 2359633.72, "pasivo_no_corriente": 455790.86, "fondo_maniobra": 445245.06, "ratio_fondo_maniobra": 0.1173, "ratio_solidez": 0.348, "ratio_liquidez": 118.87, "ratio_liquidez_inmediata": 41.6, "porcentaje_endeudamiento": 74.18, "rotacion_activos": 2.64, "roa": 14.79, "rentabilidad_explotacion": 7.44, "roe": 77.65, "coste_deuda": 0.1, "cobertura_servicio_deuda": 0.91, "cobertura_intereses": 2.65, "existencias": 1682927.268, "clientes": 420731.817, "tesoreria": 280487.87799999997, "otros_activos_corrientes": 420731.817, "inmovilizado_material": 495184.32, "inmovilizado_intangible": 346629.024, "otros_activos_no_corrientes": 148555.296, "deuda_bancaria_lp": 112616.9832, "deuda_bancaria_cp": 985398.603, "proveedores": 1126169.8320000002, "otros_pasivos": 591239.1618, "pmc": 222, "pmp": 61, "rotacion_inventario": 64}, {"año": 2023, "ventas": 10243641.77, "margen_bruto": 1555860.86, "margen_bruto_pct": 15.19, "ebitda": 602890.27, "ebitda_pct": 5.89, "ebit": 558374.47, "ebit_pct": 5.45, "resultado_neto": 424128.22, "resultado_neto_pct": 4.14, "activo_total": 4030514.53, "activo_corriente": 3367118.45, "activo_no_corriente": 663396.08, "patrimonio_neto": 799640.59, "pasivo_corriente": 2979731.43, "pasivo_no_corriente": 251142.51, "fondo_maniobra": 387387.02, "ratio_fondo_maniobra": 0.0961, "ratio_solidez": 0.2475, "ratio_liquidez": 113.0, "ratio_liquidez_inmediata": 39.55, "porcentaje_endeudamiento": 80.16, "rotacion_activos": 2.54, "roa": 10.52, "rentabilidad_explotacion": 5.45, "roe": 75.86, "coste_deuda": 0.09, "cobertura_servicio_deuda": 0.64, "cobertura_intereses": 1.92, "existencias": 2020271.07, "clientes": 505067.7675, "tesoreria": 336711.84500000003, "otros_activos_corrientes": 505067.7675, "inmovilizado_material": 331698.04, "inmovilizado_intangible": 232188.62799999997, "otros_activos_no_corrientes": 99509.412, "deuda_bancaria_lp": 129234.95760000002, "deuda_bancaria_cp": 1130805.879, "proveedores": 1292349.5760000004, "otros_pasivos": 678483.5274, "pmc": 222, "pmp": 61, "rotacion_inventario": 64}, {"año": 2024, "ventas": 14529554.06, "margen_bruto": 2086737.85, "margen_bruto_pct": 14.36, "ebitda": 434918.14, "ebitda_pct": 2.99, "ebit": 369399.12, "ebit_pct": 2.54, "resultado_neto": 166767.69, "resultado_neto_pct": 1.15, "activo_total": 4796594.73, "activo_corriente": 4428934.06, "activo_no_corriente": 367660.67, "patrimonio_neto": 544328.06, "pasivo_corriente": 4089330.72, "pasivo_no_corriente": 162935.95, "fondo_maniobra": 339603.34, "ratio_fondo_maniobra": 0.0708, "ratio_solidez": 0.128, "ratio_liquidez": 108.3, "ratio_liquidez_inmediata": 37.91, "porcentaje_endeudamiento": 88.65, "rotacion_activos": 3.03, "roa": 3.48, "rentabilidad_explotacion": 2.54, "roe": 45.52, "coste_deuda": 0.08, "cobertura_servicio_deuda": 0.37, "cobertura_intereses": 1.09, "existencias": 2657360.4359999998, "clientes": 664340.1089999999, "tesoreria": 442893.40599999996, "otros_activos_corrientes": 664340.1089999999, "inmovilizado_material": 183830.335, "inmovilizado_intangible": 128681.23449999999, "otros_activos_no_corrientes": 55149.10049999999, "deuda_bancaria_lp": 170090.6668, "deuda_bancaria_cp": 1488293.3344999999, "proveedores": 1700906.668, "otros_pasivos": 892976.0007, "pmc": 222, "pmp": 61, "rotacion_inventario": 64}]}, {"id": "sa2l_pharmacie_sl", "name": "SA2L PHARMACIE SL", "description": "Sector farmacéutico. Buena solvencia y liquidez, pero alta volatilidad en rentabilidad operativa.", "risk_level": "bajo", "latest_year": 2024, "historical": [{"año": 2022, "ventas": 4588370.8, "margen_bruto": 1322827.15, "margen_bruto_pct": 28.83, "ebitda": 27787.81, "ebitda_pct": 0.61, "ebit": 27497.87, "ebit_pct": 0.6, "resultado_neto": 27497.87, "resultado_neto_pct": 0.6, "activo_total": 1140304.1, "activo_corriente": 1080379.69, "activo_no_corriente": 59924.41, "patrimonio_neto": 191305.52, "pasivo_corriente": 948998.58, "pasivo_no_corriente": 0.0, "fondo_maniobra": 131381.11, "ratio_fondo_maniobra": 0.12, "ratio_solidez": 3.19, "ratio_liquidez": 13.84, "ratio_liquidez_inmediata": 59.59, "porcentaje_endeudamiento": 5.0, "rotacion_activos": 4.02, "roa": 2.41, "rentabilidad_explotacion": 2.44, "roe": 14.37, "coste_deuda": null, "cobertura_servicio_deuda": null, "cobertura_intereses": null, "existencias": 540189.845, "clientes": 324113.90699999995, "tesoreria": 129645.56279999999, "otros_activos_corrientes": 86430.3752, "inmovilizado_material": 32958.425500000005, "inmovilizado_intangible": 17977.323, "otros_activos_no_corrientes": 8988.6615, "deuda_bancaria_lp": 0.0, "deuda_bancaria_cp": 142349.78699999998, "proveedores": 521949.21900000004, "otros_pasivos": 284699.57399999996, "pmc": 19, "pmp": 48, "rotacion_inventario": 60}, {"año": 2023, "ventas": 8880153.61, "margen_bruto": 3473315.35, "margen_bruto_pct": 39.11, "ebitda": 465192.82, "ebitda_pct": 5.24, "ebit": 460780.98, "ebit_pct": 5.19, "resultado_neto": 499617.73, "resultado_neto_pct": 5.63, "activo_total": 2282758.4, "activo_corriente": 2214228.38, "activo_no_corriente": 68530.02, "patrimonio_neto": 690923.25, "pasivo_corriente": 1591835.15, "pasivo_no_corriente": 0.0, "fondo_maniobra": 22393.23, "ratio_fondo_maniobra": 0.27, "ratio_solidez": 10.08, "ratio_liquidez": 139.11, "ratio_liquidez_inmediata": 44.42, "porcentaje_endeudamiento": 42.55, "rotacion_activos": 3.89, "roa": 20.18, "rentabilidad_explotacion": 20.38, "roe": 72.31, "coste_deuda": 0.04, "cobertura_servicio_deuda": 17.46, "cobertura_intereses": null, "existencias": 1107114.19, "clientes": 664268.514, "tesoreria": 265707.4056, "otros_activos_corrientes": 177138.2704, "inmovilizado_material": 37691.511000000006, "inmovilizado_intangible": 20559.006, "otros_activos_no_corrientes": 10279.503, "deuda_bancaria_lp": 0.0, "deuda_bancaria_cp": 238775.27249999996, "proveedores": 875509.3325, "otros_pasivos": 477550.5449999999, "pmc": 19, "pmp": 48, "rotacion_inventario": 60}, {"año": 2024, "ventas": 11361149.81, "margen_bruto": 4368833.96, "margen_bruto_pct": 38.45, "ebitda": 93275.09, "ebitda_pct": 0.82, "ebit": 88374.41, "ebit_pct": 0.78, "resultado_neto": 57280.23, "resultado_neto_pct": 0.5, "activo_total": 3087089.78, "activo_corriente": 2972337.7, "activo_no_corriente": 114752.08, "patrimonio_neto": 748203.48, "pasivo_corriente": 2338886.3, "pasivo_no_corriente": 0.0, "fondo_maniobra": 633451.46, "ratio_fondo_maniobra": 0.2, "ratio_solidez": 6.52, "ratio_liquidez": 127.08, "ratio_liquidez_inmediata": 37.99, "porcentaje_endeudamiento": 11.13, "rotacion_activos": 3.68, "roa": 2.86, "rentabilidad_explotacion": 3.02, "roe": 10.21, "coste_deuda": 0.04, "cobertura_servicio_deuda": 5.52, "cobertura_intereses": 7.36, "existencias": 1486168.85, "clientes": 891701.31, "tesoreria": 356680.52400000003, "otros_activos_corrientes": 237787.01600000003, "inmovilizado_material": 63113.64400000001, "inmovilizado_intangible": 34425.623999999996, "otros_activos_no_corrientes": 17212.811999999998, "deuda_bancaria_lp": 0.0, "deuda_bancaria_cp": 350832.94499999995, "proveedores": 1286387.465, "otros_pasivos": 701665.8899999999, "pmc": 19, "pmp": 48, "rotacion_inventario": 60}]}];;
+
+const analysesData = [{"company_id": "snipes_spain_sl", "company_name": "SNIPES SPAIN SL", "year": 2024, "risk_level": "bajo", "metrics": {"ventas": 73442708.94, "margen_bruto_pct": 45.87, "ebitda_pct": 4.73, "ebit_pct": 2.57, "resultado_neto_pct": 2.2, "roa": 6.28, "roe": 9.12, "ratio_liquidez": 232.63, "ratio_liquidez_inmediata": 111.94, "porcentaje_endeudamiento": 0.64, "coste_deuda": 0.03, "cobertura_intereses": 365.64, "rotacion_activos": 2.44}}, {"company_id": "foot_district_sl", "company_name": "FOOT DISTRICT SL", "year": 2024, "risk_level": "medio", "metrics": {"ventas": 26653480.88, "margen_bruto_pct": 39.58, "ebitda_pct": 8.26, "ebit_pct": 6.31, "resultado_neto_pct": 4.15, "roa": 16.69, "roe": 44.19, "ratio_liquidez": 136.48, "ratio_liquidez_inmediata": 8.85, "porcentaje_endeudamiento": 21.33, "coste_deuda": 0.09, "cobertura_intereses": 8.51, "rotacion_activos": 2.64}}, {"company_id": "proudlaces_sl", "company_name": "PROUDLACES SL", "year": 2024, "risk_level": "medio-alto", "metrics": {"ventas": 20963340.54, "margen_bruto_pct": 38.51, "ebitda_pct": 2.95, "ebit_pct": 1.3, "resultado_neto_pct": 0.51, "roa": 2.49, "roe": 5.88, "ratio_liquidez": 107.95, "ratio_liquidez_inmediata": 7.49, "porcentaje_endeudamiento": 35.28, "coste_deuda": 0.06, "cobertura_intereses": 1.26, "rotacion_activos": 1.92}}, {"company_id": "diagonal_eyewear_sl", "company_name": "DIAGONAL EYEWEAR SL", "year": 2024, "risk_level": "alto", "metrics": {"ventas": 14529554.06, "margen_bruto_pct": 14.36, "ebitda_pct": 2.99, "ebit_pct": 2.54, "resultado_neto_pct": 1.15, "roa": 3.48, "roe": 45.52, "ratio_liquidez": 108.3, "ratio_liquidez_inmediata": 37.91, "porcentaje_endeudamiento": 88.65, "coste_deuda": 0.08, "cobertura_intereses": 1.09, "rotacion_activos": 3.03}}, {"company_id": "sa2l_pharmacie_sl", "company_name": "SA2L PHARMACIE SL", "year": 2024, "risk_level": "bajo", "metrics": {"ventas": 11361149.81, "margen_bruto_pct": 38.45, "ebitda_pct": 0.82, "ebit_pct": 0.78, "resultado_neto_pct": 0.5, "roa": 2.86, "roe": 10.21, "ratio_liquidez": 127.08, "ratio_liquidez_inmediata": 37.99, "porcentaje_endeudamiento": 11.13, "coste_deuda": 0.04, "cobertura_intereses": 7.36, "rotacion_activos": 3.68}}];
+
+const riskConfig = {
+    'bajo': { label: 'Riesgo Bajo', class: 'risk-bajo', color: '#22c55e' },
+    'medio': { label: 'Riesgo Medio', class: 'risk-medio', color: '#eab308' },
+    'medio-alto': { label: 'Riesgo Medio-Alto', class: 'risk-medio-alto', color: '#f97316' },
+    'alto': { label: 'Riesgo Alto', class: 'risk-alto', color: '#ef4444' }
+};
+
+const companyColors = {
+    'snipes_spain_sl': '#3b82f6',
+    'foot_district_sl': '#22c55e', 
+    'proudlaces_sl': '#f97316',
+    'diagonal_eyewear_sl': '#ef4444',
+    'sa2l_pharmacie_sl': '#a855f7'
+};
+
+const companyNames = {
+    'snipes_spain_sl': 'SNIPES',
+    'foot_district_sl': 'FOOT DISTRICT',
+    'proudlaces_sl': 'PROUDLACES',
+    'diagonal_eyewear_sl': 'DIAGONAL',
+    'sa2l_pharmacie_sl': 'SA2L'
+};
+
+// Benchmarks
+const benchmarks = {
+    margen_bruto_pct: { min: 35, target: 42, max: 50 },
+    ebitda_pct: { min: 5, target: 8, max: 15 },
+    ebit_pct: { min: 3, target: 5, max: 10 },
+    roa: { min: 4, target: 8, max: 15 },
+    roe: { min: 8, target: 15, max: 25 },
+    ratio_liquidez: { min: 100, target: 130, max: 200 },
+    ratio_liquidez_inmediata: { min: 20, target: 40, max: 80 },
+    porcentaje_endeudamiento: { min: 0, target: 30, max: 60 },
+    coste_deuda: { min: 0, target: 4, max: 8 },
+    cobertura_intereses: { min: 2, target: 5, max: 10 }
+};
+
+// ===== STATE =====
+let selectedYear = 2024;
+let selectedCompanies = new Set(['snipes_spain_sl', 'foot_district_sl', 'proudlaces_sl', 'diagonal_eyewear_sl', 'sa2l_pharmacie_sl']);
+let currentSection = 'overview';
+let chartInstances = {};
+
+// ===== UTILITIES =====
+function formatEuro(value) {
+    if (value === null || value === undefined || isNaN(value)) return 'N/A';
+    const abs = Math.abs(value);
+    if (abs >= 1000000) return (value / 1000000).toFixed(2) + 'M€';
+    if (abs >= 1000) return (value / 1000).toFixed(0) + 'K€';
+    return value.toFixed(2) + '€';
+}
+
+function formatPct(value, decimals = 2) {
+    if (value === null || value === undefined || isNaN(value)) return 'N/A';
+    return value.toFixed(decimals) + '%';
+}
+
+function formatRatio(value, name, decimals = 2) {
+    if (value === null || value === undefined || isNaN(value)) return 'N/A';
+    // Force to number
+    let num = Number(value);
+    // Multiply by 100 if < 1 for certain ratios
+    const multiplyRatios = ['porcentaje_endeudamiento', 'coste_deuda', 'margen_bruto_pct', 'ebitda_pct', 'ebit_pct', 'resultado_neto_pct', 'rentabilidad_explotacion'];
+    if (multiplyRatios.includes(name) && Math.abs(num) < 1) {
+        num = num * 100;
+    }
+    return num.toFixed(decimals);
+}
+
+function getChartValue(value, name) {
+    if (value === null || value === undefined || isNaN(value)) return 0;
+    let num = Number(value);
+    const multiplyRatios = ['porcentaje_endeudamiento', 'coste_deuda', 'margen_bruto_pct', 'ebitda_pct', 'ebit_pct', 'resultado_neto_pct', 'rentabilidad_explotacion'];
+    if (multiplyRatios.includes(name) && Math.abs(num) < 1) {
+        num = num * 100;
+    }
+    return num;
+}
+
+function getCompanyData(companyId, year) {
+    const company = companiesData.find(c => c.id === companyId);
+    if (!company) return null;
+    return company.historical.find(h => h.año === year) || company.historical[company.historical.length - 1];
+}
+
+function getLatestData(companyId) {
+    const company = companiesData.find(c => c.id === companyId);
+    if (!company) return null;
+    return company.historical[company.historical.length - 1];
+}
+
+function getTrend(companyId, metric) {
+    const company = companiesData.find(c => c.id === companyId);
+    if (!company || company.historical.length < 2) return null;
+    const latest = company.historical[company.historical.length - 1];
+    const previous = company.historical[company.historical.length - 2];
+    const val = latest[metric];
+    const prev = previous[metric];
+    if (val === null || val === undefined || prev === null || prev === undefined) return null;
+    return { value: val - prev, pct: prev !== 0 ? ((val - prev) / Math.abs(prev)) * 100 : null };
+}
+
+function getRiskColor(value, metric) {
+    const b = benchmarks[metric];
+    if (!b) return 'neutral';
+    if (value === null || value === undefined) return 'neutral';
+
+    // For ratios where higher is better
+    const higherBetter = ['margen_bruto_pct', 'ebitda_pct', 'ebit_pct', 'roa', 'roe', 'ratio_liquidez', 'ratio_liquidez_inmediata', 'cobertura_intereses', 'rotacion_activos'];
+    const lowerBetter = ['porcentaje_endeudamiento', 'coste_deuda'];
+
+    if (higherBetter.includes(metric)) {
+        if (value >= b.target) return 'good';
+        if (value >= b.min) return 'medium';
+        return 'bad';
+    } else if (lowerBetter.includes(metric)) {
+        if (value <= b.target) return 'good';
+        if (value <= b.max) return 'medium';
+        return 'bad';
+    }
+    return 'neutral';
+}
+
+function getRiskClass(value, metric) {
+    const color = getRiskColor(value, metric);
+    return 'heatmap-' + color;
+}
+
+// ===== RENDER FUNCTIONS =====
+function renderOverview() {
+    const container = document.getElementById('overviewCards');
+    const companies = Array.from(selectedCompanies);
+
+    // Calculate aggregate KPIs
+    let totalVentas = 0, totalActivo = 0, avgROE = 0, avgLiquidez = 0, count = 0;
+    companies.forEach(id => {
+        const data = getCompanyData(id, selectedYear);
+        if (data) {
+            totalVentas += data.ventas || 0;
+            totalActivo += data.activo_total || 0;
+            if (data.roe !== null && data.roe !== undefined) { avgROE += data.roe; count++; }
+            if (data.ratio_liquidez !== null && data.ratio_liquidez !== undefined) { avgLiquidez += data.ratio_liquidez; }
+        }
+    });
+    avgROE = count > 0 ? avgROE / count : 0;
+    avgLiquidez = count > 0 ? avgLiquidez / count : 0;
+
+    const cards = [
+        { title: 'Ventas Totales', value: formatEuro(totalVentas), icon: '💶', color: 'var(--accent-blue)' },
+        { title: 'Activo Total', value: formatEuro(totalActivo), icon: '📊', color: 'var(--accent-cyan)' },
+        { title: 'ROE Medio', value: formatPct(avgROE), icon: '📈', color: 'var(--accent-green)' },
+        { title: 'Liquidez Media', value: formatPct(avgLiquidez), icon: '💧', color: 'var(--accent-yellow)' },
+    ];
+
+    container.innerHTML = cards.map(c => `
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">${c.title}</span>
+                <span style="font-size: 1.5rem;">${c.icon}</span>
+            </div>
+            <div class="card-value" style="color: ${c.color}">${c.value}</div>
+        </div>
+    `).join('');
+
+    // Render company cards
+    const grid = document.getElementById('companyGrid');
+    grid.innerHTML = companiesData.map(company => {
+        const data = getCompanyData(company.id, selectedYear);
+        const risk = riskConfig[company.risk_level];
+        const isSelected = selectedCompanies.has(company.id);
+
+        return `
+        <div class="company-card ${isSelected ? 'selected' : ''}" data-company="${company.id}" onclick="toggleCompany('${company.id}')">
+            <div class="company-header">
+                <div>
+                    <div class="company-name">${company.name}</div>
+                    <span class="risk-badge ${risk.class}">${risk.label}</span>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">Año ${selectedYear}</div>
+                </div>
+            </div>
+            <div class="company-description">${company.description}</div>
+            <div class="company-metrics">
+                <div class="company-metric">
+                    <div class="company-metric-label">Ventas</div>
+                    <div class="company-metric-value">${formatEuro(data?.ventas)}</div>
+                </div>
+                <div class="company-metric">
+                    <div class="company-metric-label">ROE</div>
+                    <div class="company-metric-value" style="color: ${data?.roe >= 10 ? 'var(--accent-green)' : data?.roe >= 0 ? 'var(--accent-yellow)' : 'var(--accent-red)'}">${formatPct(data?.roe)}</div>
+                </div>
+                <div class="company-metric">
+                    <div class="company-metric-label">EBITDA</div>
+                    <div class="company-metric-value">${formatPct(data?.ebitda_pct)}</div>
+                </div>
+                <div class="company-metric">
+                    <div class="company-metric-label">Liquidez</div>
+                    <div class="company-metric-value" style="color: ${data?.ratio_liquidez >= 120 ? 'var(--accent-green)' : data?.ratio_liquidez >= 100 ? 'var(--accent-yellow)' : 'var(--accent-red)'}">${formatPct(data?.ratio_liquidez)}</div>
+                </div>
+            </div>
+
+        </div>
+        `;
+    }).join('');
+}
+
+function renderComparison() {
+    const companies = Array.from(selectedCompanies);
+    const yearData = companies.map(id => ({ id, data: getCompanyData(id, selectedYear) })).filter(c => c.data);
+
+    // Chart 1: ROE vs ROA scatter
+    const ctx1 = document.getElementById('comparisonChart1');
+    if (!ctx1) return;
+    if (chartInstances.comparison1) chartInstances.comparison1.destroy();
+    chartInstances.comparison1 = new Chart(ctx1.getContext('2d'), {
+        type: 'scatter',
+        data: {
+            datasets: yearData.map(c => ({
+                label: companyNames[c.id],
+                data: [{ x: c.data.roa || 0, y: c.data.roe || 0 }],
+                backgroundColor: companyColors[c.id],
+                pointRadius: 12,
+                pointHoverRadius: 16
+            }))
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'top', labels: { color: '#f8fafc' } },
+                tooltip: {
+                    callbacks: {
+                        label: (ctx) => `${ctx.dataset.label}: ROA ${ctx.parsed.x.toFixed(2)}%, ROE ${ctx.parsed.y.toFixed(2)}%`
+                    }
+                }
+            },
+            scales: {
+                x: { title: { display: true, text: 'ROA (%)', color: '#94a3b8' }, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
+                y: { title: { display: true, text: 'ROE (%)', color: '#94a3b8' }, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } }
+            }
+        }
+    });
+
+    // Chart 2: Capital structure stacked bar
+    const ctx2 = document.getElementById('comparisonChart2');
+    if (!ctx2) return;
+    if (chartInstances.comparison2) chartInstances.comparison2.destroy();
+    chartInstances.comparison2 = new Chart(ctx2.getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: yearData.map(c => companyNames[c.id]),
+            datasets: [
+                { label: 'Patrimonio Neto', data: yearData.map(c => c.data.patrimonio_neto / 1000000), backgroundColor: '#22c55e' },
+                { label: 'Pasivo No Corriente', data: yearData.map(c => (c.data.pasivo_no_corriente || 0) / 1000000), backgroundColor: '#eab308' },
+                { label: 'Pasivo Corriente', data: yearData.map(c => c.data.pasivo_corriente / 1000000), backgroundColor: '#ef4444' }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { labels: { color: '#f8fafc' } },
+                tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(2)}M€` } }
+            },
+            scales: {
+                x: { stacked: true, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
+                y: { stacked: true, title: { display: true, text: 'M€', color: '#94a3b8' }, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } }
+            }
+        }
+    });
+
+    renderComparisonTable('rentabilidad');
+}
+
+function renderComparisonTable(group) {
+    const companies = Array.from(selectedCompanies);
+    const table = document.getElementById('comparisonTable');
+
+    const groups = {
+        rentabilidad: ['margen_bruto_pct', 'ebitda_pct', 'ebit_pct', 'resultado_neto_pct', 'roa', 'roe', 'rentabilidad_explotacion'],
+        estructura: ['activo_total', 'activo_corriente', 'activo_no_corriente', 'patrimonio_neto', 'pasivo_corriente', 'pasivo_no_corriente', 'fondo_maniobra'],
+        liquidez: ['ratio_fondo_maniobra', 'ratio_solidez', 'ratio_liquidez', 'ratio_liquidez_inmediata'],
+        endeudamiento: ['porcentaje_endeudamiento', 'coste_deuda', 'cobertura_intereses', 'cobertura_servicio_deuda', 'rotacion_activos']
+    };
+
+    const metricLabels = {
+        margen_bruto_pct: 'Margen Bruto', ebitda_pct: 'EBITDA %', ebit_pct: 'EBIT %',
+        resultado_neto_pct: 'Res. Neto %', roa: 'ROA', roe: 'ROE', rentabilidad_explotacion: 'Rent. Explotación',
+        activo_total: 'Activo Total', activo_corriente: 'Activo Corriente', activo_no_corriente: 'Activo No Corriente',
+        patrimonio_neto: 'Patrimonio Neto', pasivo_corriente: 'Pasivo Corriente', pasivo_no_corriente: 'Pasivo No Corriente',
+        fondo_maniobra: 'Fondo Maniobra', ratio_fondo_maniobra: 'Ratio FM', ratio_solidez: 'Ratio Solidez',
+        ratio_liquidez: 'Ratio Liquidez', ratio_liquidez_inmediata: 'Liquidez Inmediata',
+        porcentaje_endeudamiento: 'Endeudamiento', coste_deuda: 'Coste Deuda', cobertura_intereses: 'Cob. Intereses',
+        cobertura_servicio_deuda: 'Cob. Servicio Deuda', rotacion_activos: 'Rotación Activos'
+    };
+
+    const metrics = groups[group] || groups.rentabilidad;
+
+    let html = '<thead><tr><th>Métrica</th>';
+    companies.forEach(id => {
+        html += `<th>${companyNames[id]}</th>`;
+    });
+    html += '</tr></thead><tbody>';
+
+    metrics.forEach(metric => {
+        html += `<tr><td><strong>${metricLabels[metric] || metric}</strong></td>`;
+        companies.forEach(id => {
+            const data = getCompanyData(id, selectedYear);
+            let value = data ? data[metric] : null;
+            let display = 'N/A';
+            let cellClass = 'heatmap-neutral';
+
+            if (value !== null && value !== undefined) {
+                if (['activo_total', 'activo_corriente', 'activo_no_corriente', 'patrimonio_neto', 'pasivo_corriente', 'pasivo_no_corriente', 'fondo_maniobra'].includes(metric)) {
+                    display = formatEuro(value);
+                } else {
+                    display = formatRatio(value, metric) + (metric.includes('pct') || ['roa', 'roe', 'rentabilidad_explotacion', 'porcentaje_endeudamiento', 'coste_deuda', 'ratio_liquidez', 'ratio_liquidez_inmediata'].includes(metric) ? '%' : '');
+                    cellClass = getRiskClass(value, metric);
+                }
+            }
+
+            html += `<td class="heatmap-cell ${cellClass}">${display}</td>`;
+        });
+        html += '</tr>';
+    });
+
+    html += '</tbody>';
+    table.innerHTML = html;
+}
+
+function renderRatios() {
+    const companies = Array.from(selectedCompanies);
+    const yearData = companies.map(id => ({ id, data: getCompanyData(id, selectedYear) })).filter(c => c.data);
+
+    // Chart 1: Margen Bruto vs EBITDA
+    const ctx1 = document.getElementById('ratiosChart1');
+    if (!ctx1) return;
+    if (chartInstances.ratios1) chartInstances.ratios1.destroy();
+    chartInstances.ratios1 = new Chart(ctx1.getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: yearData.map(c => companyNames[c.id]),
+            datasets: [
+                { label: 'Margen Bruto %', data: yearData.map(c => c.data.margen_bruto_pct || 0), backgroundColor: '#3b82f6' },
+                { label: 'EBITDA %', data: yearData.map(c => c.data.ebitda_pct || 0), backgroundColor: '#06b6d4' },
+                { label: 'EBIT %', data: yearData.map(c => c.data.ebit_pct || 0), backgroundColor: '#22c55e' }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: '#f8fafc' } } },
+            scales: {
+                x: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
+                y: { title: { display: true, text: '%', color: '#94a3b8' }, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } }
+            }
+        }
+    });
+
+    // Chart 2: Liquidez
+    const ctx2 = document.getElementById('ratiosChart2');
+    if (!ctx2) return;
+    if (chartInstances.ratios2) chartInstances.ratios2.destroy();
+    chartInstances.ratios2 = new Chart(ctx2.getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: yearData.map(c => companyNames[c.id]),
+            datasets: [
+                { label: 'Ratio Liquidez', data: yearData.map(c => c.data.ratio_liquidez || 0), backgroundColor: '#3b82f6' },
+                { label: 'Liquidez Inmediata', data: yearData.map(c => c.data.ratio_liquidez_inmediata || 0), backgroundColor: '#06b6d4' },
+                { label: 'Benchmark (130%)', data: yearData.map(() => 130), type: 'line', borderColor: '#eab308', borderDash: [5, 5], pointRadius: 0 }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: '#f8fafc' } } },
+            scales: {
+                x: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
+                y: { title: { display: true, text: '%', color: '#94a3b8' }, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } }
+            }
+        }
+    });
+
+    // Chart 3: Endeudamiento
+    const ctx3 = document.getElementById('ratiosChart3');
+    if (!ctx3) return;
+    if (chartInstances.ratios3) chartInstances.ratios3.destroy();
+    chartInstances.ratios3 = new Chart(ctx3.getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: yearData.map(c => companyNames[c.id]),
+            datasets: [
+                { label: 'Endeudamiento %', data: yearData.map(c => getChartValue(c.data.porcentaje_endeudamiento, 'porcentaje_endeudamiento')), backgroundColor: '#ef4444' },
+                { label: 'Coste Deuda %', data: yearData.map(c => getChartValue(c.data.coste_deuda, 'coste_deuda')), backgroundColor: '#f97316' }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: '#f8fafc' } } },
+            scales: {
+                x: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
+                y: { title: { display: true, text: '%', color: '#94a3b8' }, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } }
+            }
+        }
+    });
+
+    // Chart 4: Cobertura
+    const ctx4 = document.getElementById('ratiosChart4');
+    if (!ctx4) return;
+    if (chartInstances.ratios4) chartInstances.ratios4.destroy();
+    chartInstances.ratios4 = new Chart(ctx4.getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: yearData.map(c => companyNames[c.id]),
+            datasets: [
+                { label: 'Cobertura Intereses (x)', data: yearData.map(c => getChartValue(c.data.cobertura_intereses, 'cobertura_intereses')), backgroundColor: '#22c55e' },
+                { label: 'Cobertura Servicio (x)', data: yearData.map(c => getChartValue(c.data.cobertura_servicio_deuda, 'cobertura_servicio_deuda')), backgroundColor: '#3b82f6' }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: '#f8fafc' } } },
+            scales: {
+                x: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
+                y: { title: { display: true, text: 'x', color: '#94a3b8' }, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } }
+            }
+        }
+    });
+
+    // Ratios Matrix
+    renderRatiosMatrix();
+}
+
+function renderRatiosMatrix() {
+    const companies = Array.from(selectedCompanies);
+    const table = document.getElementById('ratiosMatrix');
+
+    const metrics = [
+        { key: 'margen_bruto_pct', label: 'Margen Bruto' },
+        { key: 'ebitda_pct', label: 'EBITDA %' },
+        { key: 'ebit_pct', label: 'EBIT %' },
+        { key: 'resultado_neto_pct', label: 'Res. Neto %' },
+        { key: 'roa', label: 'ROA' },
+        { key: 'roe', label: 'ROE' },
+        { key: 'ratio_liquidez', label: 'Liquidez' },
+        { key: 'ratio_liquidez_inmediata', label: 'Liq. Inmediata' },
+        { key: 'porcentaje_endeudamiento', label: 'Endeudamiento' },
+        { key: 'coste_deuda', label: 'Coste Deuda' },
+        { key: 'cobertura_intereses', label: 'Cob. Intereses' },
+        { key: 'rotacion_activos', label: 'Rotación' }
+    ];
+
+    let html = '<thead><tr><th>Ratio</th><th>Benchmark</th>';
+    companies.forEach(id => html += `<th>${companyNames[id]}</th>`);
+    html += '</tr></thead><tbody>';
+
+    metrics.forEach(m => {
+        const b = benchmarks[m.key];
+        html += `<tr><td><strong>${m.label}</strong></td>`;
+        html += `<td style="color: var(--text-muted); font-size: 0.85rem;">${b ? b.target + (m.key.includes('pct') || ['roa', 'roe', 'rentabilidad_explotacion', 'porcentaje_endeudamiento', 'coste_deuda', 'ratio_liquidez', 'ratio_liquidez_inmediata'].includes(m.key) ? '%' : 'x') : '-'}</td>`;
+
+        companies.forEach(id => {
+            const data = getCompanyData(id, selectedYear);
+            let value = data ? data[m.key] : null;
+            let display = 'N/A';
+            let cellClass = 'heatmap-neutral';
+
+            if (value !== null && value !== undefined) {
+                display = formatRatio(value, m.key) + (m.key.includes('pct') || ['roa', 'roe', 'rentabilidad_explotacion', 'porcentaje_endeudamiento', 'coste_deuda', 'ratio_liquidez', 'ratio_liquidez_inmediata'].includes(m.key) ? '%' : 'x');
+                cellClass = getRiskClass(value, m.key);
+            }
+
+            html += `<td class="heatmap-cell ${cellClass}">${display}</td>`;
+        });
+        html += '</tr>';
+    });
+
+    html += '</tbody>';
+    table.innerHTML = html;
+}
+
+function renderTrends() {
+    const companies = Array.from(selectedCompanies);
+
+    // Chart 1: Ventas
+    const ctx1 = document.getElementById('trendsChart1');
+    if (!ctx1) return;
+    if (chartInstances.trends1) chartInstances.trends1.destroy();
+    chartInstances.trends1 = new Chart(ctx1.getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: ['2022', '2023', '2024'],
+            datasets: companies.map(id => {
+                const company = companiesData.find(c => c.id === id);
+                return {
+                    label: companyNames[id],
+                    data: company.historical.map(h => h.ventas / 1000000),
+                    borderColor: companyColors[id],
+                    backgroundColor: companyColors[id] + '20',
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 6,
+                    pointHoverRadius: 8
+                };
+            })
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: '#f8fafc' } } },
+            scales: {
+                x: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
+                y: { title: { display: true, text: 'M€', color: '#94a3b8' }, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } }
+            }
+        }
+    });
+
+    // Chart 2: ROE
+    const ctx2 = document.getElementById('trendsChart2');
+    if (!ctx2) return;
+    if (chartInstances.trends2) chartInstances.trends2.destroy();
+    chartInstances.trends2 = new Chart(ctx2.getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: ['2022', '2023', '2024'],
+            datasets: companies.map(id => {
+                const company = companiesData.find(c => c.id === id);
+                return {
+                    label: companyNames[id],
+                    data: company.historical.map(h => h.roe || 0),
+                    borderColor: companyColors[id],
+                    backgroundColor: companyColors[id] + '20',
+                    fill: false,
+                    tension: 0.3,
+                    pointRadius: 6,
+                    pointHoverRadius: 8
+                };
+            })
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: '#f8fafc' } } },
+            scales: {
+                x: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
+                y: { title: { display: true, text: '%', color: '#94a3b8' }, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } }
+            }
+        }
+    });
+
+    // Chart 3: EBITDA %
+    const ctx3 = document.getElementById('trendsChart3');
+    if (!ctx3) return;
+    if (chartInstances.trends3) chartInstances.trends3.destroy();
+    chartInstances.trends3 = new Chart(ctx3.getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: ['2022', '2023', '2024'],
+            datasets: companies.map(id => {
+                const company = companiesData.find(c => c.id === id);
+                return {
+                    label: companyNames[id],
+                    data: company.historical.map(h => h.ebitda_pct || 0),
+                    borderColor: companyColors[id],
+                    backgroundColor: companyColors[id] + '20',
+                    fill: false,
+                    tension: 0.3,
+                    pointRadius: 6,
+                    pointHoverRadius: 8
+                };
+            })
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: '#f8fafc' } } },
+            scales: {
+                x: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
+                y: { title: { display: true, text: '%', color: '#94a3b8' }, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } }
+            }
+        }
+    });
+
+    // Chart 4: Endeudamiento
+    const ctx4 = document.getElementById('trendsChart4');
+    if (!ctx4) return;
+    if (chartInstances.trends4) chartInstances.trends4.destroy();
+    chartInstances.trends4 = new Chart(ctx4.getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: ['2022', '2023', '2024'],
+            datasets: companies.map(id => {
+                const company = companiesData.find(c => c.id === id);
+                return {
+                    label: companyNames[id],
+                    data: company.historical.map(h => getChartValue(h.porcentaje_endeudamiento, 'porcentaje_endeudamiento')),
+                    borderColor: companyColors[id],
+                    backgroundColor: companyColors[id] + '20',
+                    fill: false,
+                    tension: 0.3,
+                    pointRadius: 6,
+                    pointHoverRadius: 8
+                };
+            })
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: '#f8fafc' } } },
+            scales: {
+                x: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
+                y: { title: { display: true, text: '%', color: '#94a3b8' }, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } }
+            }
+        }
+    });
+}
+
+function renderRotacion() {
+    const companies = Array.from(selectedCompanies);
+    const yearData = companies.map(id => ({ id, data: getCompanyData(id, selectedYear) })).filter(c => c.data);
+
+    console.log('Rotación data:', yearData.map(c => ({ name: companyNames[c.id], pmc: c.data.pmc, pmp: c.data.pmp, rotAct: c.data.rotacion_activos, rotInv: c.data.rotacion_inventario })));
+
+    // Chart 1: PMC (Periodo Medio de Cobro)
+    const ctx1 = document.getElementById('rotacionChart1');
+    if (!ctx1) return;
+    if (chartInstances.rotacion1) chartInstances.rotacion1.destroy();
+    chartInstances.rotacion1 = new Chart(ctx1.getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: yearData.map(c => companyNames[c.id]),
+            datasets: [{
+                label: 'PMC (días)',
+                data: yearData.map(c => c.data.pmc || 0),
+                backgroundColor: yearData.map(c => {
+                    const pmc = c.data.pmc || 0;
+                    return pmc <= 60 ? '#22c55e' : pmc <= 120 ? '#eab308' : '#ef4444';
+                }),
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: { callbacks: { label: (ctx) => `PMC: ${ctx.parsed.y} días` } }
+            },
+            scales: {
+                x: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
+                y: { title: { display: true, text: 'días', color: '#94a3b8' }, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } }
+            }
+        }
+    });
+
+    // Chart 2: PMP (Periodo Medio de Pago)
+    const ctx2 = document.getElementById('rotacionChart2');
+    if (!ctx2) return;
+    if (chartInstances.rotacion2) chartInstances.rotacion2.destroy();
+    chartInstances.rotacion2 = new Chart(ctx2.getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: yearData.map(c => companyNames[c.id]),
+            datasets: [{
+                label: 'PMP (días)',
+                data: yearData.map(c => c.data.pmp || 0),
+                backgroundColor: yearData.map(c => {
+                    const pmp = c.data.pmp || 0;
+                    return pmp <= 90 ? '#22c55e' : pmp <= 180 ? '#eab308' : '#ef4444';
+                }),
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: { callbacks: { label: (ctx) => `PMP: ${ctx.parsed.y} días` } }
+            },
+            scales: {
+                x: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
+                y: { title: { display: true, text: 'días', color: '#94a3b8' }, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } }
+            }
+        }
+    });
+
+    // Chart 3: Rotación de Activos
+    const ctx3 = document.getElementById('rotacionChart3');
+    if (!ctx3) return;
+    if (chartInstances.rotacion3) chartInstances.rotacion3.destroy();
+    chartInstances.rotacion3 = new Chart(ctx3.getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: yearData.map(c => companyNames[c.id]),
+            datasets: [{
+                label: 'Rotación Activos (x)',
+                data: yearData.map(c => c.data.rotacion_activos || 0),
+                backgroundColor: '#3b82f6',
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: { callbacks: { label: (ctx) => `Rotación: ${ctx.parsed.y}x` } }
+            },
+            scales: {
+                x: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
+                y: { title: { display: true, text: 'x', color: '#94a3b8' }, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } }
+            }
+        }
+    });
+
+    // Chart 4: Rotación de Inventario
+    const ctx4 = document.getElementById('rotacionChart4');
+    if (!ctx4) return;
+    if (chartInstances.rotacion4) chartInstances.rotacion4.destroy();
+    chartInstances.rotacion4 = new Chart(ctx4.getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: yearData.map(c => companyNames[c.id]),
+            datasets: [{
+                label: 'Rot. Inventario (días)',
+                data: yearData.map(c => c.data.rotacion_inventario || 0),
+                backgroundColor: yearData.map(c => {
+                    const rot = c.data.rotacion_inventario || 0;
+                    return rot <= 90 ? '#22c55e' : rot <= 150 ? '#eab308' : '#ef4444';
+                }),
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: { callbacks: { label: (ctx) => `Rot. Inventario: ${ctx.parsed.y} días` } }
+            },
+            scales: {
+                x: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
+                y: { title: { display: true, text: 'días', color: '#94a3b8' }, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } }
+            }
+        }
+    });
+
+    // Rotación Table
+    renderRotacionTable();
+}
+
+function renderRotacionTable() {
+    const companies = Array.from(selectedCompanies);
+    const table = document.getElementById('rotacionTable');
+
+    const metrics = [
+        { key: 'pmc', label: 'Periodo Medio Cobro', unit: 'días', good: (v) => v <= 60, medium: (v) => v <= 120 },
+        { key: 'pmp', label: 'Periodo Medio Pago', unit: 'días', good: (v) => v <= 90, medium: (v) => v <= 180 },
+        { key: 'rotacion_activos', label: 'Rotación Activos', unit: 'x', good: (v) => v >= 2.5, medium: (v) => v >= 1.5 },
+        { key: 'rotacion_inventario', label: 'Rotación Inventario', unit: 'días', good: (v) => v <= 90, medium: (v) => v <= 150 }
+    ];
+
+    let html = '<thead><tr><th>Métrica</th>';
+    companies.forEach(id => html += `<th>${companyNames[id]}</th>`);
+    html += '</tr></thead><tbody>';
+
+    metrics.forEach(m => {
+        html += `<tr><td><strong>${m.label}</strong></td>`;
+        companies.forEach(id => {
+            const data = getCompanyData(id, selectedYear);
+            const value = data ? data[m.key] : null;
+            let display = 'N/A';
+            let cellClass = 'heatmap-neutral';
+
+            if (value !== null && value !== undefined) {
+                display = value + ' ' + m.unit;
+                if (m.good(value)) cellClass = 'heatmap-good';
+                else if (m.medium(value)) cellClass = 'heatmap-medium';
+                else cellClass = 'heatmap-bad';
+            }
+
+            html += `<td class="heatmap-cell ${cellClass}">${display}</td>`;
+        });
+        html += '</tr>';
+    });
+
+    html += '</tbody>';
+    table.innerHTML = html;
+}
+
+function renderAudit() {
+    const container = document.getElementById('auditCards');
+    const companies = Array.from(selectedCompanies);
+
+    const auditTexts = {
+        'snipes_spain_sl': [
+            { type: 'info', text: 'Solidez patrimonial muy alta: se financia prácticamente con fondos propios.' },
+            { type: 'warning', text: 'EBITDA bajo (4.7%) para un margen bruto del 45.9% — estructura de costes operativos pesada.' },
+            { type: 'info', text: 'Liquidez muy cómoda (232.63%) con mucha tesorería y realizable.' },
+            { type: 'info', text: 'Cobertura de intereses de 365x — capacidad de repago enorme.' },
+            { type: 'warning', text: 'Capacidad de absorción de shocks limitada por bajo EBITDA.' }
+        ],
+        'foot_district_sl': [
+            { type: 'info', text: 'Rentabilidad muy alta: ROE 44.19% y ROA 16.69% en 2024.' },
+            { type: 'warning', text: 'Liquidez inmediata baja (8.85%) — depende de rotación de existencias.' },
+            { type: 'warning', text: 'Coste de deuda elevado (~9%) — sensible a subida de tipos.' },
+            { type: 'info', text: 'Coberturas holgadas (8.51x intereses, 8.72x servicio).' },
+            { type: 'warning', text: 'Peso relevante de pasivo corriente (58.7%) — vigilar vencimientos.' }
+        ],
+        'proudlaces_sl': [
+            { type: 'danger', text: 'Rentabilidad muy volátil: 2023 con pérdidas significativas, 2024 recuperación modesta.' },
+            { type: 'danger', text: 'Estructura de capital débil: PN solo 22.4% del activo.' },
+            { type: 'danger', text: 'Liquidez justa: ratio 107.95% con muy poca liquidez inmediata (7.49%).' },
+            { type: 'danger', text: 'Cobertura de intereses de 1.26x — llega justa para pagar intereses.' },
+            { type: 'warning', text: 'Revisar cláusulas de financiación, calendario de vencimientos y escenarios de estrés.' }
+        ],
+        'diagonal_eyewear_sl': [
+            { type: 'danger', text: 'Riesgo financiero alto: PN muy pequeño (11.35% del activo), pasivo corriente 85.25%.' },
+            { type: 'danger', text: 'Margen bruto muy bajo (14.3%) para retail especializado.' },
+            { type: 'danger', text: 'Apalancamiento financiero elevado: deuda ajena 40 puntos mayor que la media sectorial.' },
+            { type: 'warning', text: 'ROE alto (45.52%) soportado por base de capital pequeña, no por margen operativo.' },
+            { type: 'danger', text: 'Foco auditoría: hipótesis de empresa en funcionamiento, calendarización de deuda, cumplimiento de covenants.' }
+        ],
+        'sa2l_pharmacie_sl': [
+            { type: 'info', text: 'Solvencia buena: endeudamiento 11.13%, coberturas holgadas (7.36x intereses).' },
+            { type: 'warning', text: 'Caída abrupta de rentabilidad 2023→2024: ROE de 72.31% a 10.21%.' },
+            { type: 'warning', text: 'EBITDA muy bajo (0.8%) para un margen bruto del 38.5%.' },
+            { type: 'info', text: 'Liquidez aceptable (127.08%) con baja deuda total.' },
+            { type: 'warning', text: 'Revisar causas de caída de márgenes: costes de aprovisionamiento, estructura de gastos, eventos no recurrentes.' }
+        ]
+    };
+
+    container.innerHTML = companies.map(id => {
+        const company = companiesData.find(c => c.id === id);
+        const risk = riskConfig[company.risk_level];
+        const alerts = auditTexts[id] || [];
+
+        return `
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <div style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.25rem;">${company.name}</div>
+                    <span class="risk-badge ${risk.class}">${risk.label}</span>
+                </div>
+            </div>
+            <div class="audit-alerts">
+                ${alerts.map(a => `
+                    <div class="audit-alert audit-alert-${a.type}">
+                        <span class="audit-alert-icon">${a.type === 'info' ? 'ℹ️' : a.type === 'warning' ? '⚠️' : '🚨'}</span>
+                        <span>${a.text}</span>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+        `;
+    }).join('');
+
+    // Risk Heatmap
+    renderRiskHeatmap();
+}
+
+function renderRiskHeatmap() {
+    const companies = Array.from(selectedCompanies);
+    const table = document.getElementById('riskHeatmap');
+
+    const risks = [
+        { key: 'rentabilidad', label: 'Rentabilidad', metrics: ['roa', 'roe'] },
+        { key: 'margen', label: 'Margen Operativo', metrics: ['ebitda_pct'] },
+        { key: 'liquidez', label: 'Liquidez', metrics: ['ratio_liquidez', 'ratio_liquidez_inmediata'] },
+        { key: 'endeudamiento', label: 'Endeudamiento', metrics: ['porcentaje_endeudamiento'] },
+        { key: 'cobertura', label: 'Cobertura', metrics: ['cobertura_intereses'] },
+        { key: 'solvencia', label: 'Solvencia', metrics: ['ratio_solidez'] }
+    ];
+
+    let html = '<thead><tr><th>Área de Riesgo</th>';
+    companies.forEach(id => html += `<th>${companyNames[id]}</th>`);
+    html += '</tr></thead><tbody>';
+
+    risks.forEach(r => {
+        html += `<tr><td><strong>${r.label}</strong></td>`;
+        companies.forEach(id => {
+            const data = getCompanyData(id, selectedYear);
+            let worstColor = 'good';
+            let hasData = false;
+
+            r.metrics.forEach(m => {
+                const val = data ? data[m] : null;
+                if (val !== null && val !== undefined) {
+                    hasData = true;
+                    const color = getRiskColor(val, m);
+                    if (color === 'bad') worstColor = 'bad';
+                    else if (color === 'medium' && worstColor !== 'bad') worstColor = 'medium';
+                }
+            });
+
+            const labels = { good: '✅ Bajo', medium: '⚠️ Medio', bad: '🚨 Alto', neutral: '—' };
+            html += `<td class="heatmap-cell heatmap-${hasData ? worstColor : 'neutral'}">${labels[hasData ? worstColor : 'neutral']}</td>`;
+        });
+        html += '</tr>';
+    });
+
+    html += '</tbody>';
+    table.innerHTML = html;
+}
+
+function changeDetailCompany(companyId) {
+    selectedCompanies = new Set([companyId]);
+    renderDetail();
+}
+
+function renderDetail() {
+    const companies = Array.from(selectedCompanies);
+    const companyId = companies[0] || 'snipes_spain_sl';
+    const company = companiesData.find(c => c.id === companyId);
+    const data = getCompanyData(companyId, selectedYear);
+    const allData = company.historical;
+
+    // Populate company selector
+    const selector = document.getElementById('detailCompanySelector');
+    if (selector) {
+        selector.innerHTML = companiesData.map(c => 
+            `<option value="${c.id}" ${c.id === companyId ? 'selected' : ''}>${c.name}</option>`
+        ).join('');
+    }
+
+    // Sidebar
+    const sidebar = document.getElementById('detailSidebar');
+    // Keep the selector, update the rest
+    const selectorHTML = sidebar.querySelector('#detailCompanySelector') ? 
+        `<div style="margin-bottom: 1rem;">
+            <div class="detail-section-title">Empresa</div>
+            <select id="detailCompanySelector" style="width: 100%; background: var(--bg-primary); border: 1px solid var(--border); color: var(--text-primary); padding: 0.5rem; border-radius: var(--radius-sm); font-size: 0.9rem;" onchange="changeDetailCompany(this.value)">
+                ${companiesData.map(c => `<option value="${c.id}" ${c.id === companyId ? 'selected' : ''}>${c.name}</option>`).join('')}
+            </select>
+        </div>` : '';
+
+    sidebar.innerHTML = selectorHTML + `
+        <div class="detail-company-name">${company.name}</div>
+        <span class="risk-badge ${riskConfig[company.risk_level].class}">${riskConfig[company.risk_level].label}</span>
+        <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-secondary); line-height: 1.5;">${company.description}</p>
+
+        <div class="detail-section">
+            <div class="detail-section-title">Métricas Clave ${selectedYear}</div>
+            <div class="detail-metric"><span class="detail-metric-label">Ventas</span><span class="detail-metric-value">${formatEuro(data?.ventas)}</span></div>
+            <div class="detail-metric"><span class="detail-metric-label">Activo Total</span><span class="detail-metric-value">${formatEuro(data?.activo_total)}</span></div>
+            <div class="detail-metric"><span class="detail-metric-label">Patrimonio Neto</span><span class="detail-metric-value">${formatEuro(data?.patrimonio_neto)}</span></div>
+            <div class="detail-metric"><span class="detail-metric-label">EBITDA</span><span class="detail-metric-value">${formatEuro(data?.ebitda)}</span></div>
+            <div class="detail-metric"><span class="detail-metric-label">Resultado Neto</span><span class="detail-metric-value">${formatEuro(data?.resultado_neto)}</span></div>
+        </div>
+
+        <div class="detail-section">
+            <div class="detail-section-title">Ratios ${selectedYear}</div>
+            <div class="detail-metric"><span class="detail-metric-label">ROE</span><span class="detail-metric-value">${formatPct(data?.roe)}</span></div>
+            <div class="detail-metric"><span class="detail-metric-label">ROA</span><span class="detail-metric-value">${formatPct(data?.roa)}</span></div>
+            <div class="detail-metric"><span class="detail-metric-label">Liquidez</span><span class="detail-metric-value">${formatPct(data?.ratio_liquidez)}</span></div>
+            <div class="detail-metric"><span class="detail-metric-label">Endeudamiento</span><span class="detail-metric-value">${formatRatio(data?.porcentaje_endeudamiento, 'porcentaje_endeudamiento')}%</span></div>
+            <div class="detail-metric"><span class="detail-metric-label">Cobertura</span><span class="detail-metric-value">${data?.cobertura_intereses ? data.cobertura_intereses.toFixed(2) + 'x' : 'N/A'}</span></div>
+        </div>
+    `;
+
+    // Content
+    const content = document.getElementById('detailContent');
+    content.innerHTML = `
+        <div class="chart-grid">
+            <div class="chart-card">
+                <div class="chart-title">Evolución de Ventas y Resultado</div>
+                <div class="chart-container large"><canvas id="detailChart1"></canvas></div>
+            </div>
+            <div class="chart-card">
+                <div class="chart-title">Evolución de Ratios</div>
+                <div class="chart-container large"><canvas id="detailChart2"></canvas></div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div class="table-header">
+                <span class="table-title">Histórico Completo</span>
+            </div>
+            <table id="detailTable"></table>
+        </div>
+    `;
+
+    // Detail charts
+    const ctx1 = document.getElementById('detailChart1');
+    if (!ctx1) return;
+    if (chartInstances.detail1) chartInstances.detail1.destroy();
+    chartInstances.detail1 = new Chart(ctx1.getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: allData.map(h => h.año),
+            datasets: [
+                { label: 'Ventas (M€)', data: allData.map(h => h.ventas / 1000000), backgroundColor: '#3b82f6', yAxisID: 'y' },
+                { label: 'Res. Neto (M€)', data: allData.map(h => h.resultado_neto / 1000000), backgroundColor: '#22c55e', yAxisID: 'y' },
+                { label: 'EBITDA (M€)', data: allData.map(h => h.ebitda / 1000000), backgroundColor: '#06b6d4', yAxisID: 'y' }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: '#f8fafc' } } },
+            scales: {
+                x: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
+                y: { title: { display: true, text: 'M€', color: '#94a3b8' }, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } }
+            }
+        }
+    });
+
+    const ctx2 = document.getElementById('detailChart2');
+    if (!ctx2) return;
+    if (chartInstances.detail2) chartInstances.detail2.destroy();
+    chartInstances.detail2 = new Chart(ctx2.getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: allData.map(h => h.año),
+            datasets: [
+                { label: 'ROE %', data: allData.map(h => h.roe || 0), borderColor: '#22c55e', backgroundColor: '#22c55e20', fill: true, tension: 0.3 },
+                { label: 'ROA %', data: allData.map(h => h.roa || 0), borderColor: '#3b82f6', backgroundColor: '#3b82f620', fill: true, tension: 0.3 },
+                { label: 'EBITDA %', data: allData.map(h => h.ebitda_pct || 0), borderColor: '#06b6d4', backgroundColor: '#06b6d420', fill: true, tension: 0.3 }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: '#f8fafc' } } },
+            scales: {
+                x: { grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
+                y: { title: { display: true, text: '%', color: '#94a3b8' }, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } }
+            }
+        }
+    });
+
+    // Detail table
+    const detailTable = document.getElementById('detailTable');
+    let html = '<thead><tr><th>Año</th><th>Ventas</th><th>Margen Bruto</th><th>EBITDA</th><th>EBIT</th><th>Res. Neto</th><th>Activo</th><th>PN</th><th>ROE</th><th>ROA</th><th>Liquidez</th><th>Endeud.</th></tr></thead><tbody>';
+
+    allData.forEach(h => {
+        html += `<tr>
+            <td><strong>${h.año}</strong></td>
+            <td class="cell-value">${formatEuro(h.ventas)}</td>
+            <td class="cell-value">${formatPct(h.margen_bruto_pct)}</td>
+            <td class="cell-value">${formatEuro(h.ebitda)}</td>
+            <td class="cell-value">${formatEuro(h.ebit)}</td>
+            <td class="cell-value">${formatEuro(h.resultado_neto)}</td>
+            <td class="cell-value">${formatEuro(h.activo_total)}</td>
+            <td class="cell-value">${formatEuro(h.patrimonio_neto)}</td>
+            <td class="cell-value">${formatPct(h.roe)}</td>
+            <td class="cell-value">${formatPct(h.roa)}</td>
+            <td class="cell-value">${formatPct(h.ratio_liquidez)}</td>
+            <td class="cell-value">${formatRatio(h.porcentaje_endeudamiento, 'porcentaje_endeudamiento')}%</td>
+        </tr>`;
+    });
+
+    html += '</tbody>';
+    detailTable.innerHTML = html;
+}
+
+// ===== EVENT HANDLERS =====
+function toggleCompany(id) {
+    if (selectedCompanies.has(id)) {
+        if (selectedCompanies.size > 1) selectedCompanies.delete(id);
+    } else {
+        selectedCompanies.add(id);
+    }
+    // If we're in detail view and only one company selected, stay in detail
+    // If multiple selected in detail view, switch to comparison
+    if (currentSection === 'detail' && selectedCompanies.size > 1) {
+        currentSection = 'comparison';
+        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelector('[data-section="comparison"]').classList.add('active');
+        document.getElementById('comparison').classList.add('active');
+    }
+    renderCurrentSection();
+}
+
+function renderCurrentSection() {
+    switch(currentSection) {
+        case 'overview': renderOverview(); break;
+        case 'comparison': renderComparison(); break;
+        case 'ratios': renderRatios(); break;
+        case 'trends': renderTrends(); break;
+        case 'rotacion': renderRotacion(); break;
+        case 'audit': renderAudit(); break;
+        case 'detail': renderDetail(); break;
+    }
+}
+
+// Navigation
+document.getElementById('navTabs').addEventListener('click', (e) => {
+    if (e.target.classList.contains('nav-tab')) {
+        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        e.target.classList.add('active');
+        currentSection = e.target.dataset.section;
+        document.getElementById(currentSection).classList.add('active');
+        renderCurrentSection();
+    }
+});
+
+// Year selector
+document.getElementById('yearSelector').addEventListener('change', (e) => {
+    selectedYear = parseInt(e.target.value);
+    renderCurrentSection();
+});
+
+// Company selector
+document.getElementById('companySelector').addEventListener('change', (e) => {
+    const val = e.target.value;
+    if (val === 'all') {
+        selectedCompanies = new Set(companiesData.map(c => c.id));
+    } else {
+        selectedCompanies = new Set([val]);
+    }
+    // Update overview cards to show selection
+    if (currentSection === 'overview') {
+        renderOverview();
+    } else {
+        renderCurrentSection();
+    }
+});
+
+// Select all
+document.getElementById('selectAllBtn').addEventListener('click', () => {
+    selectedCompanies = new Set(companiesData.map(c => c.id));
+    renderCurrentSection();
+});
+
+// Clear selection
+document.getElementById('clearSelectionBtn').addEventListener('click', () => {
+    selectedCompanies = new Set([companiesData[0].id]);
+    renderCurrentSection();
+});
+
+// Comparison table toggle
+document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('toggle-btn')) {
+        document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        renderComparisonTable(e.target.dataset.metricGroup);
+    }
+});
+
+// Initialize
+console.log('FinSight Dashboard v2.1 loaded');
+console.log('Companies:', companiesData.map(c => c.name));
+renderOverview();
+
+</script>
+</body>
+</html>
